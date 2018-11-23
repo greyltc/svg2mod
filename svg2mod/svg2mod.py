@@ -491,8 +491,11 @@ class Svg2ModExport( object ):
                     stroke = False
 
                 elif name == "stroke-width":
-                    value = value.replace( "px", "" )
-                    stroke_width = float( value ) * 25.4 / float(self.dpi)
+                    if self.use_mm:
+                        stroke_width = float(value)
+                    else:
+                        value = value.replace( "px", "" )
+                        stroke_width = float( value ) * 25.4 / float(self.dpi)
 
         if not stroke:
             stroke_width = 0.0
@@ -578,7 +581,6 @@ class Svg2ModExport( object ):
     #------------------------------------------------------------------------
 
     def _write_items( self, items, layer, flip = False ):
-
         for item in items:
 
             if isinstance( item, svg.Group ):
@@ -586,7 +588,6 @@ class Svg2ModExport( object ):
                 continue
 
             elif isinstance( item, svg.Path ):
-
                 segments = [
                     PolygonSegment( segment )
                     for segment in item.segments(
@@ -602,6 +603,8 @@ class Svg2ModExport( object ):
 
                 elif len( segments ) > 0:
                     points = segments[ 0 ].points
+                else:
+                    print("Path with no segments, panicking")
 
                 fill, stroke, stroke_width = self._get_fill_stroke( item )
 
@@ -617,7 +620,11 @@ class Svg2ModExport( object ):
                 self._write_polygon(
                     points, layer, fill, stroke, stroke_width
                 )
-
+            elif isinstance( item, svg.Circle ):
+                fill, stroke, stroke_width = self._get_fill_stroke(item)
+                center = self.transform_point( item.center, flip )
+                radius = abs(self.transform_point(item.center + item.rx, flip).x - center.x)
+                self._write_circle(layer, center, radius, fill, stroke, stroke_width)
             else:
                 print( "Unsupported SVG element: {}".format(
                     item.__class__.__name__
@@ -1334,7 +1341,26 @@ class Svg2ModExportPretty( Svg2ModExport ):
 )
         )
 
-
+    def _write_circle(self, layer, center, radius, fill, stroke, stroke_width):
+        if fill:
+            width = radius * 2
+            radius = 0
+            if stroke:
+                width = width + stroke_width
+        else:
+            width = stroke_width if stroke else 0
+        self.output_file.write("""
+  (fp_circle
+    (center {} {})
+    (end {} {})
+    (layer {})
+    (width {}))""".format(
+            center.x, center.y,
+            center.x, center.y + radius,
+            layer,
+            width)
+        )
+        
     #------------------------------------------------------------------------
 
 #----------------------------------------------------------------------------

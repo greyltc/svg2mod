@@ -199,6 +199,7 @@ class Segment:
         return (Point(xmin,ymin),Point(xmax,ymax))
 
     def transform(self, matrix):
+        print("Segment matrix", matrix)
         self.start = matrix * self.start
         self.end = matrix * self.end
 
@@ -312,6 +313,7 @@ class MoveTo:
         return (self.dest, self.dest)
 
     def transform(self, matrix):
+        print("MoveTo matrix", matrix)
         self.dest = matrix * self.dest
 
     def scale(self, ratio):
