@@ -553,9 +553,10 @@ class Ellipse(Transformable):
         return (pmin, pmax)
 
     def transform(self, matrix):
-        self.center = self.matrix * self.center
-        self.rx = self.matrix.xlength(self.rx)
-        self.ry = self.matrix.ylength(self.ry)
+        matrix *= self.matrix
+        self.center = matrix * self.center
+        self.rx = matrix.xlength(self.rx)
+        self.ry = matrix.ylength(self.ry)
 
     def scale(self, ratio):
         self.center *= ratio
