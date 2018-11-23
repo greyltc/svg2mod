@@ -491,7 +491,7 @@ class Svg2ModExport( object ):
                     stroke = False
 
                 elif name == "stroke-width":
-                    if self.use_mm:
+                    if self.use_mm and "px" not in value:
                         stroke_width = float(value)
                     else:
                         value = value.replace( "px", "" )
