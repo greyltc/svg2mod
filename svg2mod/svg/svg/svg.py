@@ -401,7 +401,7 @@ class Path(Transformable):
             # Close Path
                 l = Segment(current_pt, start_pt)
                 self.items.append(l)
-
+                current_pt = start_pt
 
             elif command in 'LHV':
             # LineTo, Horizontal & Vertical line
