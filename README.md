@@ -7,7 +7,7 @@ Python 3
 
 ## Installation
 
-```pip3 install git+https://github.com/zirafa/svg2mod```
+```pip3 install git+https://github.com/greyltc/svg2mod```
 
 Note: ```python3 setup.py install``` does not work.
 
